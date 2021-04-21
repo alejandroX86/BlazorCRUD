@@ -1,0 +1,165 @@
+﻿@page "/filmdetails"
+@page "/filmdetails/{id:int}"
+@using Model 
+@using Interfaces
+@inject IFilmService FilmService
+@inject NavigationManager NavigationManager
+
+
+
+
+<RadzenTemplateForm Data="@film">
+
+<div class="row">
+
+    <div class="col-10">
+
+        <RadzenFieldset Text="Film Details ">
+
+            <div class="row">
+
+                <div class="col-md-2 align-items-center d-flex">
+
+                    <RadzenLabel Text="Title" />
+
+                </div>
+
+                <div class="col-md-6 ">
+
+                    <RadzenTextBox Name="Title" Style="width:100%" @bind-Value="film.Title" />
+
+
+
+                </div>
+
+            </div>
+            <div class="row">
+
+                <div class="col-md-2 align-items-center d-flex">
+
+                    <RadzenLabel Text="Director" />
+
+                </div>
+
+                <div class="col-md-6 ">
+
+                    <RadzenTextBox Name="Director" Style="width:100%" @bind-Value="film.Director" />
+
+
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-2 align-items-center d-flex">
+
+                    <RadzenLabel Text="Release Date" />
+
+                </div>
+
+                <div class="col-md-6 fieldSpase ">
+
+                    <RadzenDatePicker @bind-Value="film.ReleaseDate" DateFormat="d" />
+
+
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-2 align-items-center d-flex">
+
+               
+
+                </div>
+
+                <div class="col-md-6 fieldSpase ">
+
+                    <RadzenButton Text="Save" ButtonStyle="ButtonStyle.Primary" Click=@(args => SaveFilm()) />
+                    <RadzenButton Text="Cancel" ButtonStyle="ButtonStyle.Secondary" Click=@(args => CancelFilm()) />
+
+
+                </div>
+
+            </div>
+
+        </RadzenFieldset>
+
+
+
+    </div>
+
+
+</div>
+
+</RadzenTemplateForm>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@code {
+
+    [Parameter]
+
+    public int id { get; set; }
+
+    Film film = new Film();
+
+
+
+    protected void CancelFilm()
+    {
+
+
+        NavigationManager.NavigateTo("/filmlist");
+    }
+
+
+    protected  async Task SaveFilm()
+    {
+
+        await FilmService.SaveFilm(film);
+
+
+        NavigationManager.NavigateTo("/filmlist");
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (id == 0)
+        {
+
+            film.ReleaseDate = DateTime.Now;
+        }
+
+        else
+        {
+
+            film = await FilmService.GetDetails(id);
+
+        }
+
+
+    }
+
+
+
+}

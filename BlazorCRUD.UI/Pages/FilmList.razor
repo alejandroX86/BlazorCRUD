@@ -1,0 +1,164 @@
+﻿
+@page "/filmlist" 
+@using Model
+@using Interfaces
+@inject IFilmService FilService
+
+
+<h1>Film List</h1>
+
+<p>This page shows a list of all films.</p>
+
+@if (films == null)
+{
+
+    <p><em>Loading....</em></p>
+
+}
+
+
+else
+
+{
+
+    <RadzenDropDown AllowClear="true" TValue="int"
+                    Data=@(films.Select(f => new  {Id = f.Id,Title = f.Title}).Distinct()) 
+                     
+                     TextProperty="Title" ValueProperty="Id">
+
+    </RadzenDropDown>
+    
+    
+    
+    <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                
+                
+         FilterMode="FilterMode.Advanced" AllowPaging="true" PageSize="4" AllowSorting="true"
+                Data="@films" TItem="Film" ColumnWidth="200px">
+
+
+        <Columns>
+
+            <RadzenGridColumn TItem="Film" Property="Title" Title="Title" />
+            <RadzenGridColumn TItem="Film" Property="Director" Title="Director" />
+            <RadzenGridColumn TItem="Film" Property="ReleaseDate" Title="Release">
+
+                <Template Context="data">
+
+                    @String.Format("{0:d}", data.ReleaseDate)
+                </Template>
+
+
+
+            </RadzenGridColumn>
+
+
+            <RadzenGridColumn TItem="Film" Title="Edit">
+
+                <Template Context="data">
+
+                    <RadzenLink Path=@($"/filmdetails/{data.Id}") Text="Edit" Target="_blank" />
+                </Template>
+
+
+
+
+
+            </RadzenGridColumn>
+
+            <RadzenGridColumn TItem="Film" Title="Delete">
+
+                <Template Context="data">
+
+                    <RadzenLink Path=@($"/filmdelete/{data.Id}") Text="Delete" Target="_blank" />
+                </Template>
+
+
+
+
+
+            </RadzenGridColumn>
+
+        </Columns>
+
+
+    </RadzenGrid>
+
+
+
+
+
+
+     @*<table class="table">
+         <thead>
+             <tr>
+
+                 <th>Title</th>
+                 <th>Director</th>
+                 <th>Release Date</th>
+                 <th></th>
+                 <th></th>
+            
+             </tr>
+
+
+
+         </thead>
+
+         <tbody>
+
+             @foreach (var film in films)
+             {
+
+             <tr>
+
+                 <td>@film.Title</td>
+                 <td>@film.Director</td>
+                 <td>@film.ReleaseDate</td>
+                 <td><a href="/filmdetails/@film.Id"><i>Edit</i></a> </td>
+                 <td><a href="/filmdelete/@film.Id"><i>Delete</i></a> </td>
+                 <td></td>
+
+
+             </tr>
+
+
+
+             }
+
+         </tbody>
+
+     </table>*@
+
+}
+
+
+
+@code {
+
+    private IEnumerable<Film> films;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+
+            films = await FilService.GetAllFilms();
+
+        }
+
+
+
+        catch(Exception)
+        {
+
+            throw;
+        }
+
+
+
+    }
+
+
+}
